@@ -1,1 +1,9 @@
-#ddd
+# Object file
+*.o
+
+# .history files
+*.history
+*.Rhistory
+
+# MATLAB temp files
+*.m~
