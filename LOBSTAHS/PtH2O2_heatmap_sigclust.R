@@ -154,6 +154,67 @@ for (i in 1:nrow(lipidclass.stats)) {
 
 write.csv(stats.forexport, file = "PtH202_ttest_stats_fortable.csv")
 
+# alternate code to return mean and sd for everything (rather than t-tests)
+# preallocate structure for results
+
+lipidclass.stats.2 = matrix(data = NA, nrow = length(ttest.classes), ncol = 17)
+
+# cycle through classes and calculate stats
+
+for (i in 1:length(ttest.classes)) {
+  
+  data.thisclass = hcPtassign[hcPtassign$species %in% ttest.classes[[i]],]
+  
+  # subset by state of regulation
+  
+  data.upreg = data.thisclass[data.thisclass$X24h_150uM_levavg>data.thisclass$X24h_0uM_levavg,]
+  data.downreg = data.thisclass[data.thisclass$X24h_150uM_levavg<data.thisclass$X24h_0uM_levavg,]
+  
+  lipidclass.stats.2[i,1:2] = c(nrow(data.upreg), nrow(data.downreg)) 
+  
+  lipidclass.stats.2[i,3:5] = c(mean(data.upreg$FA_total_no_C),
+                                mean(data.upreg$FA_total_no_DB),
+                                mean(data.upreg$degree_oxidation))
+  
+  lipidclass.stats.2[i,6:8] = c(mean(data.downreg$FA_total_no_C),
+                                mean(data.downreg$FA_total_no_DB),
+                                mean(data.downreg$degree_oxidation))
+  
+  lipidclass.stats.2[i,12:14] = c(sd(data.upreg$FA_total_no_C),
+                                  sd(data.upreg$FA_total_no_DB),
+                                  sd(data.upreg$degree_oxidation))
+  
+  lipidclass.stats.2[i,15:17] = c(sd(data.downreg$FA_total_no_C),
+                                  sd(data.downreg$FA_total_no_DB),
+                                  sd(data.downreg$degree_oxidation))
+  
+  
+}
+
+# export raw results
+
+write.csv(lipidclass.stats.2, file = "PtH202_ttest_stats_raw.alt.csv")
+
+# reshape data, export
+
+for (i in 1:nrow(lipidclass.stats.2)) {
+  
+  if (i==1) {
+    
+    stats.forexport.2 = round(rbind(lipidclass.stats.2[i,3:5],lipidclass.stats.2[i,6:8]),1)
+    
+  } else {
+    
+    stats.forexport.2 = rbind(stats.forexport.2,
+                            c("","",""),
+                            round(rbind(lipidclass.stats.2[i,3:5],lipidclass.stats.2[i,6:8]),1))
+    
+  }
+  
+}
+
+write.csv(stats.forexport.2, file = "PtH202_ttest_stats_fortable.alt.csv")
+
 ################# look at distribution of peak area between various classes/timepoints #############
 
 alltreat.tp.hc = subset(ptdata.QA.norm.all, confcode==1) # get high-confidence data from all treatments & timepoints

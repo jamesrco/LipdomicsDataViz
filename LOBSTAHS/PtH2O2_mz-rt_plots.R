@@ -233,9 +233,11 @@ CtoDB_text.size <- 0.5 # in cex
 
 # ********* all compounds in screened & QA'd dataset
 
-# subset to just confcode = 1 or 2 (i.e., "best" or moderate matches... no competing assignments)
+# # subset to just confcode = 1 or 2 (i.e., "best" or moderate matches... no competing assignments)
+# ptdata.QA.norm.all.1 <- ptdata.QA.norm.all[ptdata.QA.norm.all$confcode==1 | ptdata.QA.norm.all$confcode==2,]
 
-ptdata.QA.norm.all.1 <- ptdata.QA.norm.all[ptdata.QA.norm.all$confcode==1 | ptdata.QA.norm.all$confcode==2,]
+# # subset to just confcode = 1 (i.e., "best" matches... no competing assignments)
+ptdata.QA.norm.all.1 <- ptdata.QA.norm.all[ptdata.QA.norm.all$confcode==1,] # alternate subset for figures in revised manuscript
 
 graphics.off()
 par(oma=c(0,0,0,0)) # set margins; large dataset seems to require this
@@ -275,9 +277,11 @@ dev.off()
 
 # ********* "no oxy" case 
 
-# subset to just confcode = 1 or 2 (i.e., "best" or moderate matches... no competing assignments)
+# # subset to just confcode = 1 or 2 (i.e., "best" or moderate matches... no competing assignments)
+# ptdata.QA.norm.sub.no_oxy.1 <- ptdata.QA.norm.sub.no_oxy[ptdata.QA.norm.sub.no_oxy$confcode==1 | ptdata.QA.norm.sub.no_oxy$confcode==2,]
 
-ptdata.QA.norm.sub.no_oxy.1 <- ptdata.QA.norm.sub.no_oxy[ptdata.QA.norm.sub.no_oxy$confcode==1 | ptdata.QA.norm.sub.no_oxy$confcode==2,]
+# subset to just confcode = 1 (i.e., "best" matches... no competing assignments)
+ptdata.QA.norm.sub.no_oxy.1 <- ptdata.QA.norm.sub.no_oxy[ptdata.QA.norm.sub.no_oxy$confcode==1,]
 
 graphics.off()
 par(oma=c(0,0,0,0)) # set margins; large dataset seems to require this
@@ -317,9 +321,11 @@ dev.off()
 
 # ********* "max oxy" case 
 
-# subset to just confcode = 1 or 2 (i.e., "best" or moderate matches... no competing assignments)
+# # subset to just confcode = 1 or 2 (i.e., "best" or moderate matches... no competing assignments)
+# ptdata.QA.norm.sub.max_oxy.1 <- ptdata.QA.norm.sub.max_oxy[ptdata.QA.norm.sub.max_oxy$confcode==1 | ptdata.QA.norm.sub.max_oxy$confcode==2,]
 
-ptdata.QA.norm.sub.max_oxy.1 <- ptdata.QA.norm.sub.max_oxy[ptdata.QA.norm.sub.max_oxy$confcode==1 | ptdata.QA.norm.sub.max_oxy$confcode==2,]
+# subset to just confcode = 1 (i.e., "best" matches... no competing assignments)
+ptdata.QA.norm.sub.max_oxy.1 <- ptdata.QA.norm.sub.max_oxy[ptdata.QA.norm.sub.max_oxy$confcode==1,]
 
 graphics.off()
 par(oma=c(0,0,0,0)) # set margins; large dataset seems to require this
@@ -346,6 +352,247 @@ plot(ptdata.QA.norm.sub.max_oxy.1$peakgroup.rt/60,ptdata.QA.norm.sub.max_oxy.1$L
 #   text(min.rt,min.mz,paste0("Database match at 2 ppm\nOnly assignments meeting r/t window criteria\nOnly assignments with even no. fatty acid C atoms\n"),pos=4,cex=0.75)
 
 dev.off()
+
+################# use the subsets from the no and max oxy conditions to look at the data in a different way #############
+
+# venn diagrams
+
+library("VennDiagram")
+
+# generate stats for individual diagrams, calculate relative size for figures
+
+All.no = nrow(ptdata.QA.norm.sub.no_oxy.1)
+All.max = nrow(ptdata.QA.norm.sub.max_oxy.1)
+All.union = length(intersect(ptdata.QA.norm.sub.no_oxy.1$compound_name,ptdata.QA.norm.sub.max_oxy.1$compound_name))
+All.scalefac = 1
+
+DGCC.no = nrow(ptdata.QA.norm.sub.no_oxy.1[ptdata.QA.norm.sub.no_oxy.1$species=="DGCC",])
+DGCC.max = nrow(ptdata.QA.norm.sub.max_oxy.1[ptdata.QA.norm.sub.max_oxy.1$species=="DGCC",])
+DGCC.union = length(intersect(ptdata.QA.norm.sub.no_oxy.1[ptdata.QA.norm.sub.no_oxy.1$species=="DGCC",c("compound_name")],ptdata.QA.norm.sub.max_oxy.1[ptdata.QA.norm.sub.max_oxy.1$species=="DGCC",c("compound_name")]))
+DGCC.scalefac = DGCC.no/All.no
+
+DGDG.no = nrow(ptdata.QA.norm.sub.no_oxy.1[ptdata.QA.norm.sub.no_oxy.1$species=="DGDG",])
+DGDG.max = nrow(ptdata.QA.norm.sub.max_oxy.1[ptdata.QA.norm.sub.max_oxy.1$species=="DGDG",])
+DGDG.union = length(intersect(ptdata.QA.norm.sub.no_oxy.1[ptdata.QA.norm.sub.no_oxy.1$species=="DGDG",c("compound_name")],ptdata.QA.norm.sub.max_oxy.1[ptdata.QA.norm.sub.max_oxy.1$species=="DGDG",c("compound_name")]))
+DGDG.scalefac = DGDG.no/All.no
+
+DGTS.no = nrow(ptdata.QA.norm.sub.no_oxy.1[ptdata.QA.norm.sub.no_oxy.1$species=="DGTS_DGTA",])
+DGTS.max = nrow(ptdata.QA.norm.sub.max_oxy.1[ptdata.QA.norm.sub.max_oxy.1$species=="DGTS_DGTA",])
+DGTS.union = length(intersect(ptdata.QA.norm.sub.no_oxy.1[ptdata.QA.norm.sub.no_oxy.1$species=="DGTS_DGTA",c("compound_name")],ptdata.QA.norm.sub.max_oxy.1[ptdata.QA.norm.sub.max_oxy.1$species=="DGTS_DGTA",c("compound_name")]))
+DGTS.scalefac = DGTS.no/All.no
+
+MGDG.no = nrow(ptdata.QA.norm.sub.no_oxy.1[ptdata.QA.norm.sub.no_oxy.1$species=="MGDG",])
+MGDG.max = nrow(ptdata.QA.norm.sub.max_oxy.1[ptdata.QA.norm.sub.max_oxy.1$species=="MGDG",])
+MGDG.union = length(intersect(ptdata.QA.norm.sub.no_oxy.1[ptdata.QA.norm.sub.no_oxy.1$species=="MGDG",c("compound_name")],ptdata.QA.norm.sub.max_oxy.1[ptdata.QA.norm.sub.max_oxy.1$species=="MGDG",c("compound_name")]))
+MGDG.scalefac = MGDG.no/All.no
+
+PC.no = nrow(ptdata.QA.norm.sub.no_oxy.1[ptdata.QA.norm.sub.no_oxy.1$species=="PC",])
+PC.max = nrow(ptdata.QA.norm.sub.max_oxy.1[ptdata.QA.norm.sub.max_oxy.1$species=="PC",])
+PC.union = length(intersect(ptdata.QA.norm.sub.no_oxy.1[ptdata.QA.norm.sub.no_oxy.1$species=="PC",c("compound_name")],ptdata.QA.norm.sub.max_oxy.1[ptdata.QA.norm.sub.max_oxy.1$species=="PC",c("compound_name")]))
+PC.scalefac = PC.no/All.no
+
+PE.no = nrow(ptdata.QA.norm.sub.no_oxy.1[ptdata.QA.norm.sub.no_oxy.1$species=="PE",])
+PE.max = nrow(ptdata.QA.norm.sub.max_oxy.1[ptdata.QA.norm.sub.max_oxy.1$species=="PE",])
+PE.union = length(intersect(ptdata.QA.norm.sub.no_oxy.1[ptdata.QA.norm.sub.no_oxy.1$species=="PE",c("compound_name")],ptdata.QA.norm.sub.max_oxy.1[ptdata.QA.norm.sub.max_oxy.1$species=="PE",c("compound_name")]))
+PE.scalefac = PE.no/All.no
+
+PG.no = nrow(ptdata.QA.norm.sub.no_oxy.1[ptdata.QA.norm.sub.no_oxy.1$species=="PG",])
+PG.max = nrow(ptdata.QA.norm.sub.max_oxy.1[ptdata.QA.norm.sub.max_oxy.1$species=="PG",])
+PG.union = length(intersect(ptdata.QA.norm.sub.no_oxy.1[ptdata.QA.norm.sub.no_oxy.1$species=="PG",c("compound_name")],ptdata.QA.norm.sub.max_oxy.1[ptdata.QA.norm.sub.max_oxy.1$species=="PG",c("compound_name")]))
+PG.scalefac = PG.no/All.no
+
+SQDG.no = nrow(ptdata.QA.norm.sub.no_oxy.1[ptdata.QA.norm.sub.no_oxy.1$species=="SQDG",])
+SQDG.max = nrow(ptdata.QA.norm.sub.max_oxy.1[ptdata.QA.norm.sub.max_oxy.1$species=="SQDG",])
+SQDG.union = length(intersect(ptdata.QA.norm.sub.no_oxy.1[ptdata.QA.norm.sub.no_oxy.1$species=="SQDG",c("compound_name")],ptdata.QA.norm.sub.max_oxy.1[ptdata.QA.norm.sub.max_oxy.1$species=="SQDG",c("compound_name")]))
+SQDG.scalefac = SQDG.no/All.no
+
+TAG.no = nrow(ptdata.QA.norm.sub.no_oxy.1[ptdata.QA.norm.sub.no_oxy.1$species=="TAG",])
+TAG.max = nrow(ptdata.QA.norm.sub.max_oxy.1[ptdata.QA.norm.sub.max_oxy.1$species=="TAG",])
+TAG.union = length(intersect(ptdata.QA.norm.sub.no_oxy.1[ptdata.QA.norm.sub.no_oxy.1$species=="TAG",c("compound_name")],ptdata.QA.norm.sub.max_oxy.1[ptdata.QA.norm.sub.max_oxy.1$species=="TAG",c("compound_name")]))
+TAG.scalefac = TAG.no/All.no
+
+# generate diagrams
+
+# all
+
+graphics.off()
+par(oma=c(0,0,0,0)) # set margins; large dataset seems to require this
+
+# save image as pdf
+pdf.filenm <- paste0("Venn_all.pdf")
+pdf(file=pdf.filenm,width=6*All.scalefac,height=6*All.scalefac,paper="special")
+
+grid.newpage()
+draw.pairwise.venn(All.no, All.max, All.union, category = c("0 uM H2O2", "150 uM H2O2"),
+                   lwd = rep(1,2), lty = rep(1,2), col = rep("grey",2),
+                   fill = c("#FFFF00", "#f9d234"),
+                   alpha = rep(0.5, 2), cat.pos = c(0,0),
+                   cat.dist = rep(0.025, 2))
+
+dev.off()
+
+# DGCC
+
+graphics.off()
+par(oma=c(0,0,0,0)) # set margins; large dataset seems to require this
+
+# save image as pdf
+pdf.filenm <- paste0("Venn_DGCC.pdf")
+pdf(file=pdf.filenm,width=6*DGCC.scalefac,height=6*DGCC.scalefac,paper="special")
+
+grid.newpage()
+draw.pairwise.venn(DGCC.no, DGCC.max, DGCC.union, category = c("0 uM H2O2", "150 uM H2O2"),
+                   lwd = rep(1,2), lty = rep(1,2), col = rep("grey",2),
+                   fill = c("#FFFF00", "#f9d234"),
+                   alpha = rep(0.5, 2), cat.pos = c(0,0),
+                   cat.dist = rep(0.025, 2))
+
+dev.off()
+
+# DGDG
+
+graphics.off()
+par(oma=c(0,0,0,0)) # set margins; large dataset seems to require this
+
+# save image as pdf
+pdf.filenm <- paste0("Venn_DGDG.pdf")
+pdf(file=pdf.filenm,width=6*DGDG.scalefac,height=6*DGDG.scalefac,paper="special")
+
+grid.newpage()
+draw.pairwise.venn(DGDG.no, DGDG.max, DGDG.union, category = c("0 uM H2O2", "150 uM H2O2"),
+                   lwd = rep(1,2), lty = rep(1,2), col = rep("grey",2),
+                   fill = c("#FFFF00", "#f9d234"),
+                   alpha = rep(0.5, 2), cat.pos = c(0,0),
+                   cat.dist = rep(0.025, 2))
+
+dev.off()
+
+# DGTS_A
+
+graphics.off()
+par(oma=c(0,0,0,0)) # set margins; large dataset seems to require this
+
+# save image as pdf
+pdf.filenm <- paste0("Venn_DGTS.pdf")
+pdf(file=pdf.filenm,width=6*DGTS.scalefac,height=6*DGTS.scalefac,paper="special")
+
+grid.newpage()
+draw.pairwise.venn(DGTS.no, DGTS.max, DGTS.union, category = c("0 uM H2O2", "150 uM H2O2"),
+                   lwd = rep(1,2), lty = rep(1,2), col = rep("grey",2),
+                   fill = c("#FFFF00", "#f9d234"),
+                   alpha = rep(0.5, 2), cat.pos = c(0,0),
+                   cat.dist = rep(0.025, 2))
+
+dev.off()
+
+# MGDG
+
+graphics.off()
+par(oma=c(0,0,0,0)) # set margins; large dataset seems to require this
+
+# save image as pdf
+pdf.filenm <- paste0("Venn_MGDG.pdf")
+pdf(file=pdf.filenm,width=6*MGDG.scalefac,height=6*MGDG.scalefac,paper="special")
+
+grid.newpage()
+draw.pairwise.venn(MGDG.no, MGDG.max, MGDG.union, category = c("0 uM H2O2", "150 uM H2O2"),
+                   lwd = rep(1,2), lty = rep(1,2), col = rep("grey",2),
+                   fill = c("#FFFF00", "#f9d234"),
+                   alpha = rep(0.5, 2), cat.pos = c(0,0),
+                   cat.dist = rep(0.025, 2))
+
+dev.off()
+
+# PC
+
+graphics.off()
+par(oma=c(0,0,0,0)) # set margins; large dataset seems to require this
+
+# save image as pdf
+pdf.filenm <- paste0("Venn_PC.pdf")
+pdf(file=pdf.filenm,width=6*PC.scalefac,height=6*PC.scalefac,paper="special")
+
+grid.newpage()
+draw.pairwise.venn(PC.no, PC.max, PC.union, category = c("0 uM H2O2", "150 uM H2O2"),
+                   lwd = rep(1,2), lty = rep(1,2), col = rep("grey",2),
+                   fill = c("#FFFF00", "#f9d234"),
+                   alpha = rep(0.5, 2), cat.pos = c(0,0),
+                   cat.dist = rep(0.025, 2))
+
+dev.off()
+
+# PE
+
+graphics.off()
+par(oma=c(0,0,0,0)) # set margins; large dataset seems to require this
+
+# save image as pdf
+pdf.filenm <- paste0("Venn_PE.pdf")
+pdf(file=pdf.filenm,width=6*PE.scalefac,height=6*PE.scalefac,paper="special")
+
+grid.newpage()
+draw.pairwise.venn(PE.no, PE.max, PE.union, category = c("0 uM H2O2", "150 uM H2O2"),
+                   lwd = rep(1,2), lty = rep(1,2), col = rep("grey",2),
+                   fill = c("#FFFF00", "#f9d234"),
+                   alpha = rep(0.5, 2), cat.pos = c(0,0),
+                   cat.dist = rep(0.025, 2))
+
+dev.off()
+
+# PG
+
+graphics.off()
+par(oma=c(0,0,0,0)) # set margins; large dataset seems to require this
+
+# save image as pdf
+pdf.filenm <- paste0("Venn_PG.pdf")
+pdf(file=pdf.filenm,width=6*PG.scalefac,height=6*PG.scalefac,paper="special")
+
+grid.newpage()
+draw.pairwise.venn(PG.no, PG.max, PG.union, category = c("0 uM H2O2", "150 uM H2O2"),
+                   lwd = rep(1,2), lty = rep(1,2), col = rep("grey",2),
+                   fill = c("#FFFF00", "#f9d234"),
+                   alpha = rep(0.5, 2), cat.pos = c(0,0),
+                   cat.dist = rep(0.025, 2))
+
+dev.off()
+
+# SQDG
+
+graphics.off()
+par(oma=c(0,0,0,0)) # set margins; large dataset seems to require this
+
+# save image as pdf
+pdf.filenm <- paste0("Venn_SQDG.pdf")
+pdf(file=pdf.filenm,width=6*SQDG.scalefac,height=6*SQDG.scalefac,paper="special")
+
+grid.newpage()
+draw.pairwise.venn(SQDG.no, SQDG.max, SQDG.union, category = c("0 uM H2O2", "150 uM H2O2"),
+                   lwd = rep(1,2), lty = rep(1,2), col = rep("grey",2),
+                   fill = c("#FFFF00", "#f9d234"),
+                   alpha = rep(0.5, 2), cat.pos = c(0,0),
+                   cat.dist = rep(0.025, 2))
+
+dev.off()
+
+# TAG
+
+graphics.off()
+par(oma=c(0,0,0,0)) # set margins; large dataset seems to require this
+
+# save image as pdf
+pdf.filenm <- paste0("Venn_TAG.pdf")
+pdf(file=pdf.filenm,width=6*TAG.scalefac,height=6*TAG.scalefac,paper="special")
+
+grid.newpage()
+draw.pairwise.venn(TAG.no, TAG.max, TAG.union, category = c("0 uM H2O2", "150 uM H2O2"),
+                   lwd = rep(1,2), lty = rep(1,2), col = rep("grey",2),
+                   fill = c("#FFFF00", "#f9d234"),
+                   alpha = rep(0.5, 2), cat.pos = c(0,0),
+                   cat.dist = rep(0.025, 2))
+
+dev.off()
+
 
 ################# generate plots of mz vs rt by lipid type, with color coding for strength of match #############
 
