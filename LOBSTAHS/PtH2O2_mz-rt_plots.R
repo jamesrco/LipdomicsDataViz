@@ -12,6 +12,10 @@
 
 library(TeachingDemos)
 library(PtH2O2lipids)
+library(stringr)
+library(hexbin)
+library(classInt)
+library(grid)
 
 # get data
 
@@ -24,7 +28,7 @@ setwd("/Users/jrcollins/Dropbox/Cruises & projects/High-Lat Lipid Peroxidation/L
 
 # discard results with rt < 1 or > 26 mins
 
-ptdata.QA <- ptdata[ptdata$peakgroup.rt>(1*60) & ptdata$peakgroup.rt<(26*60),]
+ptdata.QA <- ptdata[ptdata$peakgroup_rt>(1*60) & ptdata$peakgroup_rt<(26*60),]
 
 ################# normalize peak areas in screenedpeaks_bygroup.sum to DNPPE, if desired #############
 
@@ -249,10 +253,10 @@ pdf(file=pdf.filenm,width=6.93,height=4.65,paper="special")
 nf<-layout(matrix(c(1,1,1,1),2),c(1,1),c(1,1))
 
 par(mar=c(5,5,1,1))
-plot(ptdata.QA.norm.all.1$peakgroup.rt/60,ptdata.QA.norm.all.1$LOBdbase.mz,col=ptdata.QA.norm.all.1$plot.bord.col,bg=ptdata.QA.norm.all.1$plot.lipid.classes.colors,pch=ptdata.QA.norm.all.1$plot.pch,cex=ptdata.QA.norm.all.1$plot.cex,lwd=ptdata.QA.norm.all.1$plot.lwd,ylab=expression(italic(m/z)),xlab="Corrected retention time (min)",xlim=c(min.rt,max.rt),ylim=c(min.mz,max.mz),xaxs="i") # scatterplot, m/z vs r/t
+plot(ptdata.QA.norm.all.1$peakgroup_rt/60,ptdata.QA.norm.all.1$LOBdbase.mz,col=ptdata.QA.norm.all.1$plot.bord.col,bg=ptdata.QA.norm.all.1$plot.lipid.classes.colors,pch=ptdata.QA.norm.all.1$plot.pch,cex=ptdata.QA.norm.all.1$plot.cex,lwd=ptdata.QA.norm.all.1$plot.lwd,ylab=expression(italic(m/z)),xlab="Corrected retention time (min)",xlim=c(min.rt,max.rt),ylim=c(min.mz,max.mz),xaxs="i") # scatterplot, m/z vs r/t
 
 # # turning this off, for now
-# text(ptdata.QA.norm.all.1$peakgroup.rt/60, ptdata.QA.norm.all.1$LOBdbase.mz,paste0(ptdata.QA.norm.all.1$FA_total_no_C,":",ptdata.QA.norm.all.1$FA_total_no_DB),cex=0.6) # scatterplot, C and DB info
+# text(ptdata.QA.norm.all.1$peakgroup_rt/60, ptdata.QA.norm.all.1$LOBdbase.mz,paste0(ptdata.QA.norm.all.1$FA_total_no_C,":",ptdata.QA.norm.all.1$FA_total_no_DB),cex=0.6) # scatterplot, C and DB info
 
 # generate some labels for the legend
 
@@ -293,10 +297,10 @@ pdf(file=pdf.filenm,width=6.93,height=4.65,paper="special")
 nf<-layout(matrix(c(1,1,1,1),2),c(1,1),c(1,1))
 
 par(mar=c(5,5,1,1))
-plot(ptdata.QA.norm.sub.no_oxy.1$peakgroup.rt/60,ptdata.QA.norm.sub.no_oxy.1$LOBdbase.mz,col=ptdata.QA.norm.sub.no_oxy.1$plot.bord.col,bg=ptdata.QA.norm.sub.no_oxy.1$plot.lipid.classes.colors,pch=ptdata.QA.norm.sub.no_oxy.1$plot.pch,cex=ptdata.QA.norm.sub.no_oxy.1$plot.cex,lwd=ptdata.QA.norm.sub.no_oxy.1$plot.lwd,ylab=expression(italic(m/z)),xlab="Corrected retention time (min)",xlim=c(min.rt,max.rt),ylim=c(min.mz,max.mz),xaxs="i") # scatterplot, m/z vs r/t
+plot(ptdata.QA.norm.sub.no_oxy.1$peakgroup_rt/60,ptdata.QA.norm.sub.no_oxy.1$LOBdbase.mz,col=ptdata.QA.norm.sub.no_oxy.1$plot.bord.col,bg=ptdata.QA.norm.sub.no_oxy.1$plot.lipid.classes.colors,pch=ptdata.QA.norm.sub.no_oxy.1$plot.pch,cex=ptdata.QA.norm.sub.no_oxy.1$plot.cex,lwd=ptdata.QA.norm.sub.no_oxy.1$plot.lwd,ylab=expression(italic(m/z)),xlab="Corrected retention time (min)",xlim=c(min.rt,max.rt),ylim=c(min.mz,max.mz),xaxs="i") # scatterplot, m/z vs r/t
 
 # # turning this off, for now
-# text(ptdata.QA.norm.sub.no_oxy.1$peakgroup.rt/60,ptdata.QA.norm.sub.no_oxy.1$LOBdbase.mz,paste0(ptdata.QA.norm.sub.no_oxy.1$FA_total_no_C,":",ptdata.QA.norm.sub.no_oxy.1$FA_total_no_DB),cex=0.6) # scatterplot, C and DB info
+# text(ptdata.QA.norm.sub.no_oxy.1$peakgroup_rt/60,ptdata.QA.norm.sub.no_oxy.1$LOBdbase.mz,paste0(ptdata.QA.norm.sub.no_oxy.1$FA_total_no_C,":",ptdata.QA.norm.sub.no_oxy.1$FA_total_no_DB),cex=0.6) # scatterplot, C and DB info
 
 # generate some labels for the legend
 
@@ -337,10 +341,10 @@ pdf(file=pdf.filenm,width=6.93,height=4.65,paper="special")
 nf<-layout(matrix(c(1,1,1,1),2),c(1,1),c(1,1))
 
 par(mar=c(5,5,1,1))
-plot(ptdata.QA.norm.sub.max_oxy.1$peakgroup.rt/60,ptdata.QA.norm.sub.max_oxy.1$LOBdbase.mz,col=ptdata.QA.norm.sub.max_oxy.1$plot.bord.col,bg=ptdata.QA.norm.sub.max_oxy.1$plot.lipid.classes.colors,pch=ptdata.QA.norm.sub.max_oxy.1$plot.pch,cex=ptdata.QA.norm.sub.max_oxy.1$plot.cex,lwd=ptdata.QA.norm.sub.max_oxy.1$plot.lwd,ylab=expression(italic(m/z)),xlab="Corrected retention time (min)",xlim=c(min.rt,max.rt),ylim=c(min.mz,max.mz),xaxs="i") # scatterplot, m/z vs r/t
+plot(ptdata.QA.norm.sub.max_oxy.1$peakgroup_rt/60,ptdata.QA.norm.sub.max_oxy.1$LOBdbase.mz,col=ptdata.QA.norm.sub.max_oxy.1$plot.bord.col,bg=ptdata.QA.norm.sub.max_oxy.1$plot.lipid.classes.colors,pch=ptdata.QA.norm.sub.max_oxy.1$plot.pch,cex=ptdata.QA.norm.sub.max_oxy.1$plot.cex,lwd=ptdata.QA.norm.sub.max_oxy.1$plot.lwd,ylab=expression(italic(m/z)),xlab="Corrected retention time (min)",xlim=c(min.rt,max.rt),ylim=c(min.mz,max.mz),xaxs="i") # scatterplot, m/z vs r/t
 
 # # turning this off for now
-# text(ptdata.QA.norm.sub.max_oxy.1$peakgroup.rt/60,ptdata.QA.norm.sub.max_oxy.1$LOBdbase.mz,paste0(ptdata.QA.norm.sub.max_oxy.1$FA_total_no_C,":",ptdata.QA.norm.sub.max_oxy.1$FA_total_no_DB),cex=0.6) # scatterplot, C and DB info
+# text(ptdata.QA.norm.sub.max_oxy.1$peakgroup_rt/60,ptdata.QA.norm.sub.max_oxy.1$LOBdbase.mz,paste0(ptdata.QA.norm.sub.max_oxy.1$FA_total_no_C,":",ptdata.QA.norm.sub.max_oxy.1$FA_total_no_DB),cex=0.6) # scatterplot, C and DB info
 
 #   # add plot legend
 #   legend("topleft",c("Unoxidized","+1O","+2O","+3O","+4O"," "," "," "," "," ",IPL.confcode.labels),pch=c(21,22,23,24,25,rep(15,5),rep(15,nrow(unique(ptdata.QA.norm.sub.no_oxy.1[,c("species","confcode")])))),col=c(rep("black",5),rep("white",5),unique(ptdata.QA.norm.sub.no_oxy.1$plot.lipid.classes.colors)),pt.lwd=0.5,pt.bg=c(rep("white",5)),y.intersp=1.5,x.intersp=1.5,cex=1,pt.cex=c(rep(1.5,10),rep(3,nrow(unique(ptdata.QA.norm.sub.no_oxy.1[,c("species","confcode")])))),xjust=1,yjust=1,bty="n",ncol=3,bg="white")
@@ -641,23 +645,23 @@ for (i in 1:length(lipid.classes.plot)) {
   
   # first, plot points with confidence 1-3
   
-  plot(ptdata.QA.norm.sub.no_oxy.conf123.IPL_subtype$peakgroup.rt/60,ptdata.QA.norm.sub.no_oxy.conf123.IPL_subtype$LOBdbase.mz,col=ptdata.QA.norm.sub.no_oxy.conf123.IPL_subtype$plot.individual.lipid.classes.bord.col,bg=ptdata.QA.norm.sub.no_oxy.conf123.IPL_subtype$plot.individual.lipid.classes.colors,pch=ptdata.QA.norm.sub.no_oxy.conf123.IPL_subtype$plot.pch,cex=ptdata.QA.norm.sub.no_oxy.conf123.IPL_subtype$plot.individual.lipid.classes.cex,lwd=ptdata.QA.norm.sub.no_oxy.conf123.IPL_subtype$plot.individual.lipid.classes.lwd,ylab=expression(italic(m/z)),xlab="Corrected retention time (min)",xlim=c(min.rt,max.rt),ylim=c(min.mz,max.mz),xaxs="i") # scatterplot, m/z vs r/t
+  plot(ptdata.QA.norm.sub.no_oxy.conf123.IPL_subtype$peakgroup_rt/60,ptdata.QA.norm.sub.no_oxy.conf123.IPL_subtype$LOBdbase.mz,col=ptdata.QA.norm.sub.no_oxy.conf123.IPL_subtype$plot.individual.lipid.classes.bord.col,bg=ptdata.QA.norm.sub.no_oxy.conf123.IPL_subtype$plot.individual.lipid.classes.colors,pch=ptdata.QA.norm.sub.no_oxy.conf123.IPL_subtype$plot.pch,cex=ptdata.QA.norm.sub.no_oxy.conf123.IPL_subtype$plot.individual.lipid.classes.cex,lwd=ptdata.QA.norm.sub.no_oxy.conf123.IPL_subtype$plot.individual.lipid.classes.lwd,ylab=expression(italic(m/z)),xlab="Corrected retention time (min)",xlim=c(min.rt,max.rt),ylim=c(min.mz,max.mz),xaxs="i") # scatterplot, m/z vs r/t
   
   # overlay dots for regioisomers
-  points(ptdata.QA.norm.sub.no_oxy.conf123.regio.IPL_subtype$peakgroup.rt/60,ptdata.QA.norm.sub.no_oxy.conf123.regio.IPL_subtype$LOBdbase.mz,bg="black",pch=20,cex=0.3)
+  points(ptdata.QA.norm.sub.no_oxy.conf123.regio.IPL_subtype$peakgroup_rt/60,ptdata.QA.norm.sub.no_oxy.conf123.regio.IPL_subtype$LOBdbase.mz,bg="black",pch=20,cex=0.3)
   
   # overlay points with confidence code 4, if there are any
   
   if (nrow(ptdata.QA.norm.sub.no_oxy.conf4.IPL_subtype)>0) {
     
-    points(ptdata.QA.norm.sub.no_oxy.conf4.IPL_subtype$peakgroup.rt/60,ptdata.QA.norm.sub.no_oxy.conf4.IPL_subtype$LOBdbase.mz,col=ptdata.QA.norm.sub.no_oxy.conf4.IPL_subtype$plot.individual.lipid.classes.bord.col,bg=ptdata.QA.norm.sub.no_oxy.conf4.IPL_subtype$plot.individual.lipid.classes.colors,pch=ptdata.QA.norm.sub.no_oxy.conf4.IPL_subtype$plot.pch,cex=ptdata.QA.norm.sub.no_oxy.conf4.IPL_subtype$plot.individual.lipid.classes.cex,lwd=ptdata.QA.norm.sub.no_oxy.conf4.IPL_subtype$plot.individual.lipid.classes.lwd)
+    points(ptdata.QA.norm.sub.no_oxy.conf4.IPL_subtype$peakgroup_rt/60,ptdata.QA.norm.sub.no_oxy.conf4.IPL_subtype$LOBdbase.mz,col=ptdata.QA.norm.sub.no_oxy.conf4.IPL_subtype$plot.individual.lipid.classes.bord.col,bg=ptdata.QA.norm.sub.no_oxy.conf4.IPL_subtype$plot.individual.lipid.classes.colors,pch=ptdata.QA.norm.sub.no_oxy.conf4.IPL_subtype$plot.pch,cex=ptdata.QA.norm.sub.no_oxy.conf4.IPL_subtype$plot.individual.lipid.classes.cex,lwd=ptdata.QA.norm.sub.no_oxy.conf4.IPL_subtype$plot.individual.lipid.classes.lwd)
     
     # overlay internal points for confidence code 4
     
-    points(ptdata.QA.norm.sub.no_oxy.conf4.IPL_subtype$peakgroup.rt/60,ptdata.QA.norm.sub.no_oxy.conf4.IPL_subtype$LOBdbase.mz,col=ptdata.QA.norm.sub.no_oxy.conf4.IPL_subtype$plot.individual.lipid.classes.bord.col,bg=ptdata.QA.norm.sub.no_oxy.conf4.IPL_subtype$plot.individual.lipid.classes.alt.colors,pch=ptdata.QA.norm.sub.no_oxy.conf4.IPL_subtype$plot.pch,cex=0.9,lwd=ptdata.QA.norm.sub.no_oxy.conf4.IPL_subtype$plot.individual.lipid.classes.lwd)
+    points(ptdata.QA.norm.sub.no_oxy.conf4.IPL_subtype$peakgroup_rt/60,ptdata.QA.norm.sub.no_oxy.conf4.IPL_subtype$LOBdbase.mz,col=ptdata.QA.norm.sub.no_oxy.conf4.IPL_subtype$plot.individual.lipid.classes.bord.col,bg=ptdata.QA.norm.sub.no_oxy.conf4.IPL_subtype$plot.individual.lipid.classes.alt.colors,pch=ptdata.QA.norm.sub.no_oxy.conf4.IPL_subtype$plot.pch,cex=0.9,lwd=ptdata.QA.norm.sub.no_oxy.conf4.IPL_subtype$plot.individual.lipid.classes.lwd)
     
     # overlay dots for regioisomers
-    points(ptdata.QA.norm.sub.no_oxy.conf4.regio.IPL_subtype$peakgroup.rt/60,ptdata.QA.norm.sub.no_oxy.conf4.regio.IPL_subtype$LOBdbase.mz,bg="black",pch=20,cex=0.3)
+    points(ptdata.QA.norm.sub.no_oxy.conf4.regio.IPL_subtype$peakgroup_rt/60,ptdata.QA.norm.sub.no_oxy.conf4.regio.IPL_subtype$LOBdbase.mz,bg="black",pch=20,cex=0.3)
     
   }
   
@@ -673,15 +677,15 @@ for (i in 1:length(lipid.classes.plot)) {
     
   } 
   
-  distmat = as.matrix(dist(cbind(forlabeling$peakgroup.rt/60+text.offset.x, forlabeling$LOBdbase.mz-text.offset.y), diag=TRUE, upper=TRUE, method = "euclidean")) # get euclidean distances
+  distmat = as.matrix(dist(cbind(forlabeling$peakgroup_rt/60+text.offset.x, forlabeling$LOBdbase.mz-text.offset.y), diag=TRUE, upper=TRUE, method = "euclidean")) # get euclidean distances
   
   dists <- apply(distmat<distcuts[i], 2, sum)  # count up the number of neighbors within distcut distance of each point
   
   labeledpoints = forlabeling[dists==1,] # subset to only points that should be labeled 
   
-  #      text(labeledpoints$peakgroup.rt/60+text.offset.x,labeledpoints$LOBdbase.mz-text.offset.y,paste0(labeledpoints$FA_total_no_C,":",labeledpoints$FA_total_no_DB),cex=CtoDB_text.size) # scatterplot, C and DB info
+  #      text(labeledpoints$peakgroup_rt/60+text.offset.x,labeledpoints$LOBdbase.mz-text.offset.y,paste0(labeledpoints$FA_total_no_C,":",labeledpoints$FA_total_no_DB),cex=CtoDB_text.size) # scatterplot, C and DB info
   
-  shadowtext(labeledpoints$peakgroup.rt/60+text.offset.x,labeledpoints$LOBdbase.mz-text.offset.y,paste0(labeledpoints$FA_total_no_C,":",labeledpoints$FA_total_no_DB),cex=CtoDB_text.size,col="black",bg="white",r=0.1,theta = seq(pi/4, 2 * pi, length.out = 30)) # scatterplot, C and DB info
+  shadowtext(labeledpoints$peakgroup_rt/60+text.offset.x,labeledpoints$LOBdbase.mz-text.offset.y,paste0(labeledpoints$FA_total_no_C,":",labeledpoints$FA_total_no_DB),cex=CtoDB_text.size,col="black",bg="white",r=0.1,theta = seq(pi/4, 2 * pi, length.out = 30)) # scatterplot, C and DB info
   
   # generate some labels for the legend
   
@@ -719,23 +723,23 @@ for (i in 1:length(lipid.classes.plot)) {
   
   # first, plot points with confidence 1-3
   
-  plot(ptdata.QA.norm.sub.max_oxy.conf123.IPL_subtype$peakgroup.rt/60,ptdata.QA.norm.sub.max_oxy.conf123.IPL_subtype$LOBdbase.mz,col=ptdata.QA.norm.sub.max_oxy.conf123.IPL_subtype$plot.individual.lipid.classes.bord.col,bg=ptdata.QA.norm.sub.max_oxy.conf123.IPL_subtype$plot.individual.lipid.classes.colors,pch=ptdata.QA.norm.sub.max_oxy.conf123.IPL_subtype$plot.pch,cex=ptdata.QA.norm.sub.max_oxy.conf123.IPL_subtype$plot.individual.lipid.classes.cex,lwd=ptdata.QA.norm.sub.max_oxy.conf123.IPL_subtype$plot.individual.lipid.classes.lwd,ylab=expression(italic(m/z)),xlab="Corrected retention time (min)",xlim=c(min.rt,max.rt),ylim=c(min.mz,max.mz),xaxs="i") # scatterplot, m/z vs r/t
+  plot(ptdata.QA.norm.sub.max_oxy.conf123.IPL_subtype$peakgroup_rt/60,ptdata.QA.norm.sub.max_oxy.conf123.IPL_subtype$LOBdbase.mz,col=ptdata.QA.norm.sub.max_oxy.conf123.IPL_subtype$plot.individual.lipid.classes.bord.col,bg=ptdata.QA.norm.sub.max_oxy.conf123.IPL_subtype$plot.individual.lipid.classes.colors,pch=ptdata.QA.norm.sub.max_oxy.conf123.IPL_subtype$plot.pch,cex=ptdata.QA.norm.sub.max_oxy.conf123.IPL_subtype$plot.individual.lipid.classes.cex,lwd=ptdata.QA.norm.sub.max_oxy.conf123.IPL_subtype$plot.individual.lipid.classes.lwd,ylab=expression(italic(m/z)),xlab="Corrected retention time (min)",xlim=c(min.rt,max.rt),ylim=c(min.mz,max.mz),xaxs="i") # scatterplot, m/z vs r/t
   
   # overlay dots for regioisomers
-  points(ptdata.QA.norm.sub.max_oxy.conf123.regio.IPL_subtype$peakgroup.rt/60,ptdata.QA.norm.sub.max_oxy.conf123.regio.IPL_subtype$LOBdbase.mz,bg="black",pch=20,cex=0.3)
+  points(ptdata.QA.norm.sub.max_oxy.conf123.regio.IPL_subtype$peakgroup_rt/60,ptdata.QA.norm.sub.max_oxy.conf123.regio.IPL_subtype$LOBdbase.mz,bg="black",pch=20,cex=0.3)
   
   # overlay points with confidence code 4, if there ase any
   
   if (nrow(ptdata.QA.norm.sub.max_oxy.conf4.IPL_subtype)>0) {
     
-    points(ptdata.QA.norm.sub.max_oxy.conf4.IPL_subtype$peakgroup.rt/60,ptdata.QA.norm.sub.max_oxy.conf4.IPL_subtype$LOBdbase.mz,col=ptdata.QA.norm.sub.max_oxy.conf4.IPL_subtype$plot.individual.lipid.classes.bord.col,bg=ptdata.QA.norm.sub.max_oxy.conf4.IPL_subtype$plot.individual.lipid.classes.colors,pch=ptdata.QA.norm.sub.max_oxy.conf4.IPL_subtype$plot.pch,cex=ptdata.QA.norm.sub.max_oxy.conf4.IPL_subtype$plot.individual.lipid.classes.cex,lwd=ptdata.QA.norm.sub.max_oxy.conf4.IPL_subtype$plot.individual.lipid.classes.lwd)
+    points(ptdata.QA.norm.sub.max_oxy.conf4.IPL_subtype$peakgroup_rt/60,ptdata.QA.norm.sub.max_oxy.conf4.IPL_subtype$LOBdbase.mz,col=ptdata.QA.norm.sub.max_oxy.conf4.IPL_subtype$plot.individual.lipid.classes.bord.col,bg=ptdata.QA.norm.sub.max_oxy.conf4.IPL_subtype$plot.individual.lipid.classes.colors,pch=ptdata.QA.norm.sub.max_oxy.conf4.IPL_subtype$plot.pch,cex=ptdata.QA.norm.sub.max_oxy.conf4.IPL_subtype$plot.individual.lipid.classes.cex,lwd=ptdata.QA.norm.sub.max_oxy.conf4.IPL_subtype$plot.individual.lipid.classes.lwd)
     
     # overlay internal points for confidence code 4
     
-    points(ptdata.QA.norm.sub.max_oxy.conf4.IPL_subtype$peakgroup.rt/60,ptdata.QA.norm.sub.max_oxy.conf4.IPL_subtype$LOBdbase.mz,col=ptdata.QA.norm.sub.max_oxy.conf4.IPL_subtype$plot.individual.lipid.classes.bord.col,bg=ptdata.QA.norm.sub.max_oxy.conf4.IPL_subtype$plot.individual.lipid.classes.alt.colors,pch=ptdata.QA.norm.sub.max_oxy.conf4.IPL_subtype$plot.pch,cex=0.9,lwd=ptdata.QA.norm.sub.max_oxy.conf4.IPL_subtype$plot.individual.lipid.classes.lwd)
+    points(ptdata.QA.norm.sub.max_oxy.conf4.IPL_subtype$peakgroup_rt/60,ptdata.QA.norm.sub.max_oxy.conf4.IPL_subtype$LOBdbase.mz,col=ptdata.QA.norm.sub.max_oxy.conf4.IPL_subtype$plot.individual.lipid.classes.bord.col,bg=ptdata.QA.norm.sub.max_oxy.conf4.IPL_subtype$plot.individual.lipid.classes.alt.colors,pch=ptdata.QA.norm.sub.max_oxy.conf4.IPL_subtype$plot.pch,cex=0.9,lwd=ptdata.QA.norm.sub.max_oxy.conf4.IPL_subtype$plot.individual.lipid.classes.lwd)
     
     # overlay dots for regioisomers
-    points(ptdata.QA.norm.sub.max_oxy.conf4.regio.IPL_subtype$peakgroup.rt/60,ptdata.QA.norm.sub.max_oxy.conf4.regio.IPL_subtype$LOBdbase.mz,bg="black",pch=20,cex=0.3)
+    points(ptdata.QA.norm.sub.max_oxy.conf4.regio.IPL_subtype$peakgroup_rt/60,ptdata.QA.norm.sub.max_oxy.conf4.regio.IPL_subtype$LOBdbase.mz,bg="black",pch=20,cex=0.3)
     
   }
   
@@ -751,15 +755,15 @@ for (i in 1:length(lipid.classes.plot)) {
     
   } 
   
-  distmat = as.matrix(dist(cbind(forlabeling$peakgroup.rt/60+text.offset.x, forlabeling$LOBdbase.mz-text.offset.y), diag=TRUE, upper=TRUE, method = "euclidean")) # get euclidean distances
+  distmat = as.matrix(dist(cbind(forlabeling$peakgroup_rt/60+text.offset.x, forlabeling$LOBdbase.mz-text.offset.y), diag=TRUE, upper=TRUE, method = "euclidean")) # get euclidean distances
   
   dists <- apply(distmat<distcuts[i], 2, sum)  # count up the number of neighbors within distcut distance of each point
   
   labeledpoints = forlabeling[dists==1,] # subset to only points that should be labeled 
   
-  #      text(labeledpoints$peakgroup.rt/60+text.offset.x,labeledpoints$LOBdbase.mz-text.offset.y,paste0(labeledpoints$FA_total_no_C,":",labeledpoints$FA_total_no_DB),cex=CtoDB_text.size) # scatterplot, C and DB info
+  #      text(labeledpoints$peakgroup_rt/60+text.offset.x,labeledpoints$LOBdbase.mz-text.offset.y,paste0(labeledpoints$FA_total_no_C,":",labeledpoints$FA_total_no_DB),cex=CtoDB_text.size) # scatterplot, C and DB info
   
-  shadowtext(labeledpoints$peakgroup.rt/60+text.offset.x,labeledpoints$LOBdbase.mz-text.offset.y,paste0(labeledpoints$FA_total_no_C,":",labeledpoints$FA_total_no_DB),cex=CtoDB_text.size,col="black",bg="white",r=0.1,theta = seq(pi/4, 2 * pi, length.out = 30)) # scatterplot, C and DB info
+  shadowtext(labeledpoints$peakgroup_rt/60+text.offset.x,labeledpoints$LOBdbase.mz-text.offset.y,paste0(labeledpoints$FA_total_no_C,":",labeledpoints$FA_total_no_DB),cex=CtoDB_text.size,col="black",bg="white",r=0.1,theta = seq(pi/4, 2 * pi, length.out = 30)) # scatterplot, C and DB info
   
   # generate some labels for the legend
   
@@ -784,6 +788,310 @@ for (i in 1:length(lipid.classes.plot)) {
   
 }
 
+################# some Van Krevelen style plots for the conclusion (Ch. 5) of my thesis #############
+
+# using only high-confidence (i.e., confcode = 1) results from 24 h
+
+# all lipids
+
+# calculate, store required ratios
+
+# ptdata.QA.norm.all.1
+ptdata.QA.norm.all.1$ratio_H_C = 
+  as.numeric(sapply(ptdata.QA.norm.all.1$elem_formula,
+                    function(x) as.numeric(str_match(as.character(str_match(x, "H[0-9]*[A-Z]")), "[0-9]+"))))/
+  as.numeric(sapply(ptdata.QA.norm.all.1$elem_formula,
+                    function(x) as.numeric(str_match(as.character(str_match(x, "^C[0-9]*H")), "[0-9]+"))))
+
+ptdata.QA.norm.all.1$ratio_O_C = 
+  as.numeric(sapply(ptdata.QA.norm.all.1$elem_formula,
+                    function(x) as.numeric(str_match(as.character(str_match(x, "O[0-9]*([A-Z]|$)")),
+                                                     "[0-9]+"))))[
+  !is.na(as.numeric(sapply(ptdata.QA.norm.all.1$elem_formula,
+                    function(x) as.numeric(str_match(as.character(str_match(x, "O[0-9]*([A-Z]|$)")),
+                                                    "[0-9]+")))))]/
+  as.numeric(sapply(ptdata.QA.norm.all.1$elem_formula,
+                    function(x) as.numeric(str_match(as.character(str_match(x, "^C[0-9]*H")), "[0-9]+"))))
+
+# ptdata.QA.norm.sub.no_oxy.1
+
+ptdata.QA.norm.sub.no_oxy.1$ratio_H_C = 
+  as.numeric(sapply(ptdata.QA.norm.sub.no_oxy.1$elem_formula,
+                    function(x) as.numeric(str_match(as.character(str_match(x, "H[0-9]*[A-Z]")), "[0-9]+"))))/
+  as.numeric(sapply(ptdata.QA.norm.sub.no_oxy.1$elem_formula,
+                    function(x) as.numeric(str_match(as.character(str_match(x, "^C[0-9]*H")), "[0-9]+"))))
+
+ptdata.QA.norm.sub.no_oxy.1$ratio_O_C = 
+  as.numeric(sapply(ptdata.QA.norm.sub.no_oxy.1$elem_formula,
+                    function(x) as.numeric(str_match(as.character(str_match(x, "O[0-9]*([A-Z]|$)")),
+                                                     "[0-9]+"))))[
+                                                       !is.na(as.numeric(sapply(ptdata.QA.norm.sub.no_oxy.1$elem_formula,
+                                                                                function(x) as.numeric(str_match(as.character(str_match(x, "O[0-9]*([A-Z]|$)")),
+                                                                                                                 "[0-9]+")))))]/
+  as.numeric(sapply(ptdata.QA.norm.sub.no_oxy.1$elem_formula,
+                    function(x) as.numeric(str_match(as.character(str_match(x, "^C[0-9]*H")), "[0-9]+"))))
+
+# ptdata.QA.norm.sub.max_oxy.1
+
+ptdata.QA.norm.sub.max_oxy.1$ratio_H_C = 
+  as.numeric(sapply(ptdata.QA.norm.sub.max_oxy.1$elem_formula,
+                    function(x) as.numeric(str_match(as.character(str_match(x, "H[0-9]*[A-Z]")), "[0-9]+"))))/
+  as.numeric(sapply(ptdata.QA.norm.sub.max_oxy.1$elem_formula,
+                    function(x) as.numeric(str_match(as.character(str_match(x, "^C[0-9]*H")), "[0-9]+"))))
+
+ptdata.QA.norm.sub.max_oxy.1$ratio_O_C = 
+  as.numeric(sapply(ptdata.QA.norm.sub.max_oxy.1$elem_formula,
+                    function(x) as.numeric(str_match(as.character(str_match(x, "O[0-9]*([A-Z]|$)")),
+                                                     "[0-9]+"))))[
+                                                       !is.na(as.numeric(sapply(ptdata.QA.norm.sub.max_oxy.1$elem_formula,
+                                                                                function(x) as.numeric(str_match(as.character(str_match(x, "O[0-9]*([A-Z]|$)")),
+                                                                                                                 "[0-9]+")))))]/
+  as.numeric(sapply(ptdata.QA.norm.sub.max_oxy.1$elem_formula,
+                    function(x) as.numeric(str_match(as.character(str_match(x, "^C[0-9]*H")), "[0-9]+"))))
+
+# subset to only most abundant compounds, if desired
+
+# ptdata.QA.norm.sub.max_oxy.1.top =  
+#         ptdata.QA.norm.sub.max_oxy.1[order(apply(cbind(ptdata.QA.norm.sub.max_oxy.1$X30uM_24h_Orbi_0470,ptdata.QA.norm.sub.max_oxy.1$X30uM_24h_Orbi_0479),1,mean), decreasing = TRUE)[1:nrow(ptdata.QA.norm.sub.max_oxy.1)],]
+#   
+# ptdata.QA.norm.sub.no_oxy.1.top =  
+#   ptdata.QA.norm.sub.no_oxy.1[order(apply(cbind(ptdata.QA.norm.sub.no_oxy.1$X0uM_24h_Orbi_0468,ptdata.QA.norm.sub.no_oxy.1$X0uM_24h_Orbi_0473),1,mean), decreasing = TRUE)[1:nrow(ptdata.QA.norm.sub.no_oxy.1)],]
+
+ptdata.QA.norm.sub.max_oxy.1.top = ptdata.QA.norm.sub.max_oxy.1
+ptdata.QA.norm.sub.no_oxy.1.top = ptdata.QA.norm.sub.no_oxy.1
+
+# some union indexes
+
+ptdata.QA.norm.sub.max_oxy.1.top.union.ind = which(rownames(ptdata.QA.norm.sub.max_oxy.1.top) %in% rownames(ptdata.QA.norm.sub.no_oxy.1.top))
+ptdata.QA.norm.sub.max_oxy.1.top.unique.ind = which(!(rownames(ptdata.QA.norm.sub.max_oxy.1.top) %in% rownames(ptdata.QA.norm.sub.no_oxy.1.top)))
+
+ptdata.QA.norm.sub.no_oxy.1.top.union.ind = which(rownames(ptdata.QA.norm.sub.no_oxy.1.top) %in% rownames(ptdata.QA.norm.sub.max_oxy.1.top))
+ptdata.QA.norm.sub.no_oxy.1.top.unique.ind = which(!(rownames(ptdata.QA.norm.sub.no_oxy.1.top) %in% rownames(ptdata.QA.norm.sub.max_oxy.1.top)))
+
+# ptdata.QA.norm.sub.max_oxy.1.top.union.ind = which(ptdata.QA.norm.sub.max_oxy.1.top$match_ID %in% ptdata.QA.norm.sub.no_oxy.1.top$match_ID)
+# ptdata.QA.norm.sub.max_oxy.1.top.unique.ind = which(!(ptdata.QA.norm.sub.max_oxy.1.top$match_ID %in% ptdata.QA.norm.sub.no_oxy.1.top$match_ID))
+# 
+# ptdata.QA.norm.sub.no_oxy.1.top.union.ind = which(ptdata.QA.norm.sub.no_oxy.1.top$match_ID %in% ptdata.QA.norm.sub.max_oxy.1.top$match_ID)
+# ptdata.QA.norm.sub.no_oxy.1.top.unique.ind = which(!(ptdata.QA.norm.sub.no_oxy.1.top$match_ID %in% ptdata.QA.norm.sub.max_oxy.1.top$match_ID))
 
 
+# plots
 
+# simplest VK diagram of all species ID'd in dataset
+
+par(oma=c(0,0,0,0)) # set margins
+
+pdf(file = "VKplot_simple_all.pdf",
+    width = 7, height = 10, pointsize = 12,
+    bg = "white")
+
+par(mar=c(5,5,1,1))
+
+plot(ptdata.QA.norm.all.1$ratio_O_C, ptdata.QA.norm.all.1$ratio_H_C, pch = 16,
+     cex = 0.3)
+
+dev.off()
+
+# present in both
+
+plot(ptdata.QA.norm.sub.max_oxy.1.top$ratio_O_C[ptdata.QA.norm.sub.max_oxy.1.top.union.ind],ptdata.QA.norm.sub.max_oxy.1.top$ratio_H_C[ptdata.QA.norm.sub.max_oxy.1.top.union.ind],pch = 3) # black crosses
+points(ptdata.QA.norm.sub.no_oxy.1.top$ratio_O_C[ptdata.QA.norm.sub.no_oxy.1.top.union.ind],ptdata.QA.norm.sub.no_oxy.1.top$ratio_H_C[ptdata.QA.norm.sub.no_oxy.1.top.union.ind],pch = 0) # black open squares
+
+# just in ptdata.QA.norm.sub.no_oxy.1.top
+
+points(ptdata.QA.norm.sub.no_oxy.1.top$ratio_O_C[ptdata.QA.norm.sub.no_oxy.1.top.unique.ind],ptdata.QA.norm.sub.no_oxy.1.top$ratio_H_C[ptdata.QA.norm.sub.no_oxy.1.top.unique.ind],pch = 0, col = "blue") # blue open squares
+
+# just in ptdata.QA.norm.sub.max_oxy.1.top
+
+points(ptdata.QA.norm.sub.max_oxy.1.top$ratio_O_C[ptdata.QA.norm.sub.max_oxy.1.top.unique.ind],ptdata.QA.norm.sub.max_oxy.1.top$ratio_H_C[ptdata.QA.norm.sub.max_oxy.1.top.unique.ind],pch = 3, col = "red") # red open squares
+
+### alternate approach
+
+plot(ptdata.QA.norm.sub.no_oxy.1.top$ratio_O_C,ptdata.QA.norm.sub.no_oxy.1.top$ratio_H_C,pch = 16, col = rgb(0, 0, 1, 0.5), cex = 0.75, xlim = c(0.08,0.44), ylim = c(1.37, 2.0))
+
+# plot centroid
+
+points(mean(ptdata.QA.norm.sub.no_oxy.1.top$ratio_O_C),mean(ptdata.QA.norm.sub.no_oxy.1.top$ratio_H_C),
+       pch = 3, cex = 2)
+
+plot(ptdata.QA.norm.sub.max_oxy.1.top$ratio_O_C,ptdata.QA.norm.sub.max_oxy.1.top$ratio_H_C,pch = 16, col = rgb(1, 0, 0, 0.5), cex = 0.75, xlim = c(0.08,0.44), ylim = c(1.37, 2.0))
+
+# plot centroid
+
+points(mean(ptdata.QA.norm.sub.max_oxy.1.top$ratio_O_C),mean(ptdata.QA.norm.sub.max_oxy.1.top$ratio_H_C),
+       pch = 4, cex = 2)
+
+plot(ptdata.QA.norm.sub.max_oxy.1.top$ratio_O_C,ptdata.QA.norm.sub.max_oxy.1.top$ratio_H_C,pch = 16, col = rgb(1, 0, 0, 0.5), cex = 0.75, xlim = c(0.08,0.44), ylim = c(1.37, 2.0))
+points(ptdata.QA.norm.sub.no_oxy.1.top$ratio_O_C,ptdata.QA.norm.sub.no_oxy.1.top$ratio_H_C,pch = 16, col = rgb(0, 0, 1, 0.5), cex = 0.75)
+
+# plot centroids
+
+points(mean(ptdata.QA.norm.sub.no_oxy.1.top$ratio_O_C),mean(ptdata.QA.norm.sub.no_oxy.1.top$ratio_H_C),
+       pch = 3, cex = 2)
+points(mean(ptdata.QA.norm.sub.max_oxy.1.top$ratio_O_C),mean(ptdata.QA.norm.sub.max_oxy.1.top$ratio_H_C),
+       pch = 4, cex = 2)
+
+color_ramp.VK <- colorRampPalette(c("lightblue", "darkblue")) # create a color ramp for shading the points according to lipid class
+
+ptdata.QA.norm.sub.no_oxy.1.top$VK.density.colors <- rev(color_ramp.VK(nrow(ptdata.QA.norm.sub.no_oxy.1.top)))[apply(cbind(ptdata.QA.norm.sub.no_oxy.1$X0uM_24h_Orbi_0468,ptdata.QA.norm.sub.no_oxy.1$X0uM_24h_Orbi_0473),1,mean)] # applies darkest shade of each color as a default
+                                                         
+                                                         
+### a third approach
+
+
+# specify confidence level for erosion
+
+erode.conf = 0.4
+
+# create parent hexbin 
+
+hbin= hexbin(ptdata.QA.norm.all.1$ratio_O_C,
+             ptdata.QA.norm.all.1$ratio_H_C,xbins=20,IDs=TRUE)
+
+# create viewport (i.e plot dimensions, aspect...)
+
+par(oma=c(0,0,0,0)) # set margins
+
+pdf(file = "VKplot_PtH2O2lipidsdata_max.oxy.pdf",
+    width = 7, height = 10, pointsize = 12,
+    bg = "white")
+
+par(mar=c(5,5,1,1))
+
+#hvp = hexViewport(hbin)
+hvp = plot(hbin)
+
+### for max oxy case
+
+# default is counts hexbins. This is overidden and means are calculated
+
+hexsums = log(hexTapply(hbin,
+                    apply(cbind(ptdata.QA.norm.all.1$X150uM_24h_Orbi_0466,ptdata.QA.norm.all.1$X150uM_24h_Orbi_0469),1,mean),
+                    sum,na.rm=TRUE))
+
+# set missing values to NA
+hexsums[hexsums==-Inf] = NA
+
+# scale means calculated to 0..1
+
+minT = min(hexsums, na.rm = T)
+maxT = max(hexsums, na.rm = T)
+rangeT = maxT - minT
+mtransScale = (hexsums - minT) / rangeT
+
+# make NA's = 0
+
+mtransScale[is.na(mtransScale)] = 0
+
+# store the scaled values
+
+mtransScale.max = mtransScale
+
+#set the colors, number intervals, interval location
+#cr <- colorRampPalette(c(rgb(1,0,0),rgb(1,1,1)))
+cr <- colorRampPalette(c('#FFFFFF','#0000CC'))
+#ci <- classIntervals(mtransScale, n = 30, style = "quantile")
+ci <- classIntervals(mtransScale, n = 100, style = "fisher")
+
+#now we can plot.
+#pushHexport(hvp)
+pushHexport(hvp$plot.vp)
+
+grid.hexagons(hbin,style='colorscale',pen=0,border= 'black',use.count=FALSE,
+              minarea = 1, maxarea = 1, mincnt = 0, maxcnt = 1,
+              cell.at=mtransScale, colramp=cr, colorcut= ci$brks)
+
+# a way of getting the bivariate median of the plot based on the scaled intensities
+# (i.e., the color density)
+hbin.test = hbin
+hbin.test@count = as.numeric(mtransScale.max)*100
+erodebin = erode.hexbin(hbin.test, cdfcut = erode.conf)
+med.max = getHMedian(erodebin)
+
+# overplot the centroid
+
+grid.points(med.max$x,med.max$y, gp=gpar(col="red"), pch = 21)
+
+dev.off()
+
+### for min oxy case
+
+par(oma=c(0,0,0,0)) # set margins
+
+pdf(file = "VKplot_PtH2O2lipidsdata_min.oxy.pdf",
+    width = 7, height = 10, pointsize = 12,
+    bg = "white")
+
+par(mar=c(5,5,1,1))
+
+hvp = plot(hbin)
+
+# default is counts hexbins. This is overidden and means are calculated
+
+hexsums = log(hexTapply(hbin,
+                        apply(cbind(ptdata.QA.norm.all.1$X0uM_24h_Orbi_0468,ptdata.QA.norm.all.1$X0uM_24h_Orbi_0473),1,mean),
+                        sum,na.rm=TRUE))
+
+# set missing values to NA
+hexsums[hexsums==-Inf] = NA
+
+# scale means calculated to 0..1
+
+minT = min(hexsums, na.rm = T)
+maxT = max(hexsums, na.rm = T)
+rangeT = maxT - minT
+mtransScale = (hexsums - minT) / rangeT
+
+# make NA's = 0
+
+mtransScale[is.na(mtransScale)] = 0
+
+# store the scaled values
+
+mtransScale.min = mtransScale
+
+#set the colors, number intervals, interval location
+#cr <- colorRampPalette(c(rgb(1,0,0),rgb(1,1,1)))
+cr <- colorRampPalette(c('#FFFFFF','#0000CC'))
+#ci <- classIntervals(mtransScale, n = 30, style = "quantile")
+ci <- classIntervals(mtransScale, n = 100, style = "fisher")
+
+#now we can plot.
+#pushHexport(hvp)
+pushHexport(hvp$plot.vp)
+grid.hexagons(hbin,style='colorscale',pen=0,border= 'black',use.count=FALSE,
+              minarea = 1, maxarea = 1, mincnt = 0, maxcnt = 1,
+              cell.at=mtransScale, colramp=cr, colorcut= ci$brks)
+
+# a way of getting the bivariate median of the plot based on the scaled intensities
+# (i.e., the color density)
+hbin.test = hbin
+hbin.test@count = as.numeric(mtransScale.min)*100
+erodebin = erode.hexbin(hbin.test, cdfcut = erode.conf)
+med.min = getHMedian(erodebin)
+
+# overplot the centroid
+
+grid.points(med.min$x,med.min$y, gp=gpar(col="red"), pch = 21)
+
+dev.off()
+
+# create, save a color bar legend
+
+# code from http://stackoverflow.com/questions/9314658/colorbar-from-custom-colorramppalette
+
+lut = cr(100)
+min = 0
+max = 1
+nticks=11
+ticks=seq(min, max, len=nticks)
+title=''
+
+scale = (length(lut)-1)/(max-min)
+
+plot(c(0,10), c(min,max), type='n', bty='n', xaxt='n', xlab='', yaxt='n', ylab='', main=title)
+axis(2, ticks, las=1)
+for (i in 1:(length(lut)-1)) {
+  y = (i-1)/scale + min
+  rect(0,y,10,y+1/scale, col=lut[i], border=NA)
+}
